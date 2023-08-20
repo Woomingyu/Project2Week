@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "A:\\C#EDU1\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj": {}
+    "A:\\git\\Project2Week\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj": {}
   },
   "projects": {
-    "A:\\C#EDU1\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj": {
+    "A:\\git\\Project2Week\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "A:\\C#EDU1\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj",
+        "projectUniqueName": "A:\\git\\Project2Week\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj",
         "projectName": "2주차 개인과제",
-        "projectPath": "A:\\C#EDU1\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj",
+        "projectPath": "A:\\git\\Project2Week\\2주차 개인과제\\2주차 개인과제\\2주차 개인과제.csproj",
         "packagesPath": "C:\\Users\\우민규\\.nuget\\packages\\",
-        "outputPath": "A:\\C#EDU1\\2주차 개인과제\\2주차 개인과제\\obj\\",
+        "outputPath": "A:\\git\\Project2Week\\2주차 개인과제\\2주차 개인과제\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\우민규\\AppData\\Roaming\\NuGet\\NuGet.Config",
