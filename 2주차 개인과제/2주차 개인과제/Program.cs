@@ -9,21 +9,23 @@ namespace _2주차_개인과제
         public Item SlotItem { get; set; }
         public int SlotNum { get; set; }
         public bool IsUsed { get; set; } // 아이템 사용 상태
+        public bool IteminSlot { get; set; } // 슬롯 사용 상태
 
         public Slot(Item slotitem, int slotNum)
         {
             SlotItem = slotitem;
             SlotNum = slotNum;
             IsUsed = false;
+            IteminSlot = false;
         }
     }
-
 
     internal class Program
     {
         static Character player; //플레이어 데이터 베이스// 전역에서 사용할 수 있게?
         static Item[] items; //아이템 데이터 베이스 배열
         static Slot[] inventorySlots;
+        static List<string> purchasedItems = new List<string>(); // 이미 구매한 아이템 데이터
 
         static void Main(string[] args)
         {
@@ -72,10 +74,11 @@ namespace _2주차_개인과제
             Console.WriteLine();
             Console.WriteLine("1. 상태보기");
             Console.WriteLine("2. 인벤토리");
+            Console.WriteLine("3. 상점");
             Console.WriteLine();
             Console.WriteLine("원하시는 행동을 입력해주세요.");
 
-            int input = CheckValidInput(1, 2);
+            int input = CheckValidInput(1, 3);
             switch (input)
             {
                 case 1:
@@ -84,6 +87,9 @@ namespace _2주차_개인과제
 
                 case 2:
                     DisplayInventory(inventorySlots); //inventorySlots : 인벤토리 슬롯의 상태를 매번 바꾸면서 저장까지 해야하는데 어떻게? => inventorySlots를 클래스 레벨에서 선언해서 초기화되지 않게 변경
+                    break;
+                case 3:
+                    DisplayShop(); // 상점 화면 표시
                     break;
             }
         }
@@ -147,7 +153,7 @@ namespace _2주차_개인과제
             Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
             Console.WriteLine();
             Console.WriteLine("[아이템 목록]");
-            Console.WriteLine($"{"   아이템 이름",-15}{"효과",-10}\t\t{"설명",-30}{"  분류",-5}{" 가격",-10}");
+            Console.WriteLine($"{"   아이템 이름",-15}{"효과",-10}\t\t{"설명",-30}\t{"  분류",-5}\t{" 가격",-10}");
 
 
             for (int i = 0; i < inventorySlots.Length; i++)
@@ -158,21 +164,26 @@ namespace _2주차_개인과제
                 string part = "";
                 string useTxt = slot.IsUsed ? "[E]" : ""; //if, else
 
-                if (inventoryItem.Type == "무기")
+                if(!slot.IteminSlot)
                 {
-                    part = "공격력+";
+                    if (inventoryItem.Type == "무기")
+                    {
+                        part = "공격력+";
+                    }
+                    else if (inventoryItem.Type == "방어구")
+                    {
+                        part = "방어력+";
+                    }
+
+                    //Console.WriteLine($"{i + 1}.{useTxt} {inventoryItem.Name,-15}|{part}{inventoryItem.Effect,-10}|{inventoryItem.Desc,-30}|{inventoryItem.Type}|{inventoryItem.Price}G");
+
+
+
+                    string itemInfo = $"{i + 1}.{useTxt} {inventoryItem.Name}\t|{part}{inventoryItem.Effect,-5}|{inventoryItem.Desc,-30}\t\t|{inventoryItem.Type}\t|{inventoryItem.Price}G";
+                    Console.WriteLine(itemInfo);
+                    slot.IteminSlot = true;
                 }
-                else if (inventoryItem.Type == "방어구")
-                {
-                    part = "방어력+";
-                }
 
-                //Console.WriteLine($"{i + 1}.{useTxt} {inventoryItem.Name,-15}|{part}{inventoryItem.Effect,-10}|{inventoryItem.Desc,-30}|{inventoryItem.Type}|{inventoryItem.Price}G");
-
-
-
-                string itemInfo = $"{i + 1}.{useTxt} {inventoryItem.Name}\t|{part}{inventoryItem.Effect,-5}|{inventoryItem.Desc,-30}\t|{inventoryItem.Type}\t|{inventoryItem.Price}G";
-                Console.WriteLine(itemInfo);
             }
 
             Console.WriteLine();
@@ -204,7 +215,7 @@ namespace _2주차_개인과제
             Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
             Console.WriteLine();
             Console.WriteLine("[아이템 목록]");
-            Console.WriteLine($"{"   아이템 이름",-15}{"효과",-10}\t\t{"설명",-30}{"  분류",-5}{" 가격",-10}"); // ,-10 ==> 문자열의 길이가 어떻든 최소 10자 이상, \t ==> 탭)
+            Console.WriteLine($"{"   아이템 이름",-15}{"효과",-10}\t\t{"설명",-30}\t{"  분류",-5}\t{" 가격",-10}");
 
 
             for (int i = 0; i < inventorySlots.Length; i++)
@@ -227,7 +238,8 @@ namespace _2주차_개인과제
                 //Console.WriteLine($"{i + 1}.{useTxt} {inventoryItem.Name,-15}|{part}{inventoryItem.Effect,-10}|{inventoryItem.Desc,-30}|{inventoryItem.Type}|{inventoryItem.Price}G");
 
 
-                string itemInfo = $"{i + 1}.{useTxt} {inventoryItem.Name}\t|{part}{inventoryItem.Effect,-5}|{inventoryItem.Desc,-30}\t|{inventoryItem.Type}\t|{inventoryItem.Price}G";
+
+                string itemInfo = $"{i + 1}.{useTxt} {inventoryItem.Name}\t|{part}{inventoryItem.Effect,-5}|{inventoryItem.Desc,-30}\t\t|{inventoryItem.Type}\t|{inventoryItem.Price}G";
                 Console.WriteLine(itemInfo);
             }
 
@@ -328,6 +340,142 @@ namespace _2주차_개인과제
             DisplayInventory(inventorySlots);
         }
 
+        static void DisplayShop()
+        {
+            Console.Clear();
+            Console.WriteLine("상점");
+            Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
+            Console.WriteLine();
+            Console.WriteLine("[보유 골드]");
+            Console.WriteLine($"{player.Gold} G");
+            Console.WriteLine();
+            Console.WriteLine("[아이템 목록]");
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                Item shopItem = items[i];
+                string part = "";
+
+                if (shopItem.Type == "무기")
+                {
+                    part = "공격력+";
+                }
+                else if (shopItem.Type == "방어구")
+                {
+                    part = "방어력+";
+                }
+                string itemInfo = $"{i + 1}.{shopItem.Name}\t|{part}{shopItem.Effect,-5}|{shopItem.Desc,-30}\t\t|{shopItem.Type}\t|";
+                string purchaseStatus = IsItemPurchased(shopItem) ? "구매완료" : $"{shopItem.Price}G";
+                Console.WriteLine($"- {itemInfo}{purchaseStatus}");
+            }
+
+            Console.WriteLine("1. 아이템 구매");
+            Console.WriteLine("0. 나가기");
+
+            int input = CheckValidInput(0, 1);
+
+            switch (input)
+            {
+                case 0:
+                    DisplayGameIntro();
+                    break;
+                case 1:
+                    BuyItem(); // 아이템 구매 메서드 호출
+                    break;
+            }
+        }
+
+
+        static void BuyItem()
+        {
+            Console.Clear();
+            Console.WriteLine("아이템 구매");
+            Console.WriteLine("구매할 아이템을 선택하세요.");
+            Console.WriteLine();
+            Console.WriteLine("[아이템 목록]");
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                Item shopItem = items[i];
+                string part = "";
+
+                if (shopItem.Type == "무기")
+                {
+                    part = "공격력+";
+                }
+                else if (shopItem.Type == "방어구")
+                {
+                    part = "방어력+";
+                }
+                string itemInfo = $"{i + 1}.{shopItem.Name}\t|{part}{shopItem.Effect,-5}|{shopItem.Desc,-30}\t\t|{shopItem.Type}\t|";
+                string purchaseStatus = IsItemPurchased(shopItem) ? "구매완료" : $"{shopItem.Price}G";
+                Console.WriteLine($"- {itemInfo}{purchaseStatus}");
+            }
+
+            Console.WriteLine("0. 돌아가기");
+
+            int input = CheckValidInput(0, items.Length);
+
+            if (input == 0)
+            {
+                DisplayShop();
+                return;
+            }
+
+            Item selectShopItem = items[input - 1]; //선택아이템 1번(item 배열의 0번째)~...
+
+            if (IsItemPurchased(selectShopItem)) //구매한 아이템인경우
+            {
+                Console.WriteLine("이미 구매한 아이템입니다.");
+            }
+            else if (player.Gold < selectShopItem.Price) // 소지 골드가 부족한 경우
+            {
+                Console.WriteLine("골드가 부족합니다.");
+            }
+            else // 나머지 (미구매 상품이고 골드가 충분할 때)
+            {
+                // 아이템 구매
+                player.Gold -= selectShopItem.Price; //골드 차감
+                AddItemToInventory(selectShopItem); //아이템을 인벤토리에 추가
+                Console.WriteLine($"{selectShopItem.Name}을(를) 구매했습니다."); //구매 Txt
+                SaveItemAsPurchased(selectShopItem); //구매 정보 저장(다시 상점에 와도 구매가 떠있도록)
+            }
+
+            // 구매 결과 표시 후 상점 화면으로 돌아감
+            Console.WriteLine("아무 키나 누르면 계속합니다...");
+            Console.ReadKey();
+            DisplayShop();
+        }
+
+        //상점의 아이템 구매여부 판별
+        static bool IsItemPurchased(Item item)
+        {
+
+            // 이미 구매한 아이템인지 확인(purchasedItems에서 동일한 이름찾기)
+            // 구매한 아이템 목록을 저장하는 방법에 따라 구현★
+            return purchasedItems.Contains(item.Name);
+        }
+
+
+        static void SaveItemAsPurchased(Item item)
+        {
+            // 아이템을 구매했다는 정보를 저장
+            purchasedItems.Add(item.Name);
+        }
+
+        static void AddItemToInventory(Item itemToAdd) //여기가 문제★
+        {
+            // 인벤토리 슬롯중 빈 슬롯에 아이템을 추가
+            foreach (var slot in inventorySlots)
+            {
+                if (!slot.IteminSlot)
+                {
+                    slot.SlotItem = itemToAdd;
+                    slot.IteminSlot = true;
+                    break; // 아이템을 추가하면 반복문을 빠져나옵니다.
+                }
+            }
+        }
 
         static int CheckValidInput(int min, int max)
         {
@@ -345,19 +493,19 @@ namespace _2주차_개인과제
                 Console.WriteLine("잘못된 입력입니다.");
             }
         }
-    }
 
+    }
 
     //데이터 통로(캐릭터)
     public class Character
     {
-        public string Name { get; }
-        public string Job { get; }
-        public int Level { get; }
-        public int Atk { get; }
-        public int Def { get; }
-        public int Hp { get; }
-        public int Gold { get; }
+        public string Name { get; set; }
+        public string Job { get; set; }
+        public int Level { get; set; }
+        public int Atk { get; set; }
+        public int Def { get; set; }
+        public int Hp { get; set; }
+        public int Gold { get; set; }
 
         public Character(string name, string job, int level, int atk, int def, int hp, int gold)
         {
@@ -393,6 +541,8 @@ namespace _2주차_개인과제
         public string PickItem()
         {
             return Name; // 아이템 이름을 식별자로 사용.
+                         // 아이템 번호를 추가하고 식별자로 사용할 수 있지만 코드 가독성(가시성?) 이 떨어짐
+
         }
     }
 }
